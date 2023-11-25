@@ -20,9 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.bluetoothserialcommunication.ui.theme.BluetoothSerialCommunicationTheme
 
-class MainActivity : ComponentActivity() {
-
-
+class MainActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
@@ -32,44 +30,8 @@ class MainActivity : ComponentActivity() {
         }
         if (bluetoothAdapter?.isEnabled == false) {
 //            startActivityForReesult(enableBtIntent, REQUEST_ENABLE_BT)
-
-            val requestPermissionLauncher =
-                registerForActivityResult(
-                    ActivityResultContracts.RequestPermission()
-                ) { isGranted: Boolean ->
-                    if (isGranted) {
-                        // パーミションを許可した時
-                        Log.d("takashii" , "true")
-                    } else {
-                        // パーミッションを許可しない時
-                        Log.d("takashii" , "false")
-                    }
-                }
-
-            when {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    // CAMERA パーミッションが既に付与されている場合の処理
-                    Log.d("takashii" , "PERMISSION_GRANTED")
-
-                }
-                ActivityCompat.shouldShowRequestPermissionRationale(
-                    this, Manifest.permission.BLUETOOTH_CONNECT
-                ) -> {
-                    // ユーザーに説明が必要な場合の処理
-                    Log.d("takashii" , "Manifest.permission.CAMERA")
-                }
-                else -> {
-                    // CAMERA パーミッションをリクエストする
-                    Log.d("takashii" , "else")
-                    requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
-                }
-            }
+            checkBluetoothPermission()
         }
-
-
         setContent {
             BluetoothSerialCommunicationTheme {
                 // A surface container using the 'background' color from the theme
@@ -77,15 +39,58 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    Greeting(
+                        "Android" ,
+                    )
                 }
             }
         }
     }
-}
 
+    private fun checkBluetoothPermission() {
+        val requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    // パーミションを許可した時
+                    Log.d("takashii", "true")
+                } else {
+                    // パーミッションを許可しない時
+                    Log.d("takashii", "false")
+                }
+            }
+        when {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // CAMERA パーミッションが既に付与されている場合の処理
+                Log.d("takashii", "PERMISSION_GRANTED")
+
+            }
+
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this, Manifest.permission.BLUETOOTH_CONNECT
+            ) -> {
+                // ユーザーに説明が必要な場合の処理
+                Log.d("takashii", "Manifest.permission.CAMERA")
+            }
+
+            else -> {
+                // CAMERA パーミッションをリクエストする
+                Log.d("takashii", "else")
+                requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            }
+        }
+    }
+}
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(
+    name: String,
+    modifier: Modifier = Modifier,
+    // 引数と戻り値がないラム
+) {
     Text(
         text = "Hello $name!",
         modifier = modifier
@@ -95,7 +100,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    BluetoothSerialCommunicationTheme {1
+    BluetoothSerialCommunicationTheme {
+        1
         Greeting("Android")
     }
 }
